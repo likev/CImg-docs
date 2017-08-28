@@ -50,8 +50,9 @@ so, `T *ptr = img.data()` gives you the pointer to the first value of the image 
 for one instance image (in bytes) is then `width*height*depth*dim*sizeof(T)`.Now, the ordering of the pixel values in this buffer
 follows these rules : The values are not interleaved, and are ordered first along the X,Y,Z and V axis respectively 
 (corresponding to the width,height,depth,dim dimensions), starting from the upper-left pixel to the bottom-right 
-pixel of the instane image, with a classical scanline run.So, a color image with dim=3 and depth=1, 
-will be stored in memory as :R1R2R3R4R5R6......G1G2G3G4G5G6.......B1B2B3B4B5B6.... (i.e following a 'planar' structure)
+pixel of the instane image, with a classical scanline run.
+  
+So, a color image with dim=3 and depth=1, will be stored in memory as :R1R2R3R4R5R6......G1G2G3G4G5G6.......B1B2B3B4B5B6.... (i.e following a 'planar' structure)
 and not as R1G1B1R2G2B2R3G3B3... (interleaved channels), where R1 = img(0,0,0,0) is the first upper-left pixel of 
 the red component of the image, R2 is img(1,0,0,0), G1 = img(0,0,0,1), G2 = img(1,0,0,1), B1 = img(0,0,0,2), and so on...
 
@@ -73,3 +74,23 @@ img.get_shared_channels(1,2).mirror('x');
 ```
 which just blur the red channel of the image, and mirror the two others along the X-axis. This is possible since channels of an image are not interleaved 
 but are stored as different consecutive planes in memory, so you see that constructing a shared image is possible (and trivial). 
+
+
+## Image channels
+```c++
+// Return the number of image channels, i.e. the image dimension along the C-axis.
+
+int spectrum() const {
+  return (int)_spectrum;
+}
+```
+- The spectrum() of an empty image is equal to 0.
+- spectrum() is typically equal to 1 when considering scalar-valued images, to 3
+ for RGB-coded color images, and to 4 for RGBA-coded color images (with alpha-channel).
+ The number of channels of an image instance is not limited. The meaning of the pixel 
+ values is not linked up to the number of channels (e.g. a 4-channel image may indifferently 
+ stands for a RGBA or CMYK color image).
+- spectrum() returns an int, although the image spectrum is internally stored as an unsigned int.
+ Using an int is safer and prevents arithmetic traps possibly encountered when 
+ doing calculations involving unsigned int variables.
+ Access to the initial unsigned int variable is possible (though not recommended) by `(*this)._spectrum`.
