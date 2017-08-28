@@ -1,7 +1,7 @@
 # CImg-docs
 
-1. CImg Library Overview	
-1. [FAQ : Frequently Asked Questions.](FAQ-Frequently-Asked-Questions.md)
+1. [CImg Library Overview](CImg-Library-Overview.md)
+1. [FAQ : Frequently Asked Questions](FAQ-Frequently-Asked-Questions.md)
 1. Setting Environment Variables	
 1. How to use CImg library with Visual C++ 2005 Express Edition ?.	
 1. Tutorial : Getting Started.	
