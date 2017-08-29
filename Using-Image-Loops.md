@@ -15,10 +15,10 @@ Loops over the pixel buffer are really basic loops that iterate a pointer on the
   - img must be a (non empty) `cimg_library::CImg` image of pixels T.
   - ptr is a pointer of type T*. This kind of loop should not appear a lot in your own source code, since this is a low-level loop and many functions of the CImg class may be used instead. Here is an example of use :
         
-        ```c++
-        CImg<float> img(320,200);
-        cimg_for(img,ptr,float) { *ptr=0; }        // Equivalent to 'img.fill(0);'
-        ```
+  ```c++
+  CImg<float> img(320,200);
+  cimg_for(img,ptr,float) { *ptr=0; }        // Equivalent to 'img.fill(0);'
+  ```
 - `cimg_rof(img,ptr,T)` : This macro does the same as cimg_for() but from the end to the beginning of the pixel buffer.
 - `cimg_foroff(img,off)` : This macro loops over the pixel data buffer of the image img, using an offset , starting from the beginning of the buffer (first pixel, off=0) till the end of the buffer (last pixel value, off = img.size()-1).
   - img must be a (non empty) `cimg_library::CImg<T>` image of pixels T.
