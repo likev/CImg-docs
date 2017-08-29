@@ -1,6 +1,6 @@
 # How pixel data are stored with CImg.
 
-## Source Code of CImg
+## Source Code of CImg data members
 ```c++
   template<typename T>
   struct CImg {
@@ -94,3 +94,115 @@ int spectrum() const {
  Using an int is safer and prevents arithmetic traps possibly encountered when 
  doing calculations involving unsigned int variables.
  Access to the initial unsigned int variable is possible (though not recommended) by `(*this)._spectrum`.
+ 
+ 
+## Source Code of CImg access function members
+```c++
+    int width() const {
+      return (int)_width;
+    }
+    
+    int height() const {
+      return (int)_height;
+    }
+
+    int depth() const {
+      return (int)_depth;
+    }
+    
+    int spectrum() const {
+      return (int)_spectrum;
+    }
+    
+    ulongT size() const {
+      return (ulongT)_width*_height*_depth*_spectrum;
+    }
+    
+    T* data() {
+      return _data;
+    }
+
+    T* data(const unsigned int x, const unsigned int y=0, const unsigned int z=0, const unsigned int c=0) {
+      return _data + x + (ulongT)y*_width + (ulongT)z*_width*_height + (ulongT)c*_width*_height*_depth;
+    }
+    
+    longT offset(const int x, const int y=0, const int z=0, const int c=0) const {
+      return x + (longT)y*_width + (longT)z*_width*_height + (longT)c*_width*_height*_depth;
+    }
+    
+    iterator begin() {
+      return _data;
+    }
+
+    iterator end() {
+      return _data + size();
+    }
+
+    T& front() {
+      return *_data;
+    }
+
+    T& back() {
+      return *(_data + size() - 1);
+    }
+    
+    //! Access to a pixel value at a specified offset, using Dirichlet boundary conditions.
+    /**
+       - Writing img.at(offset,out_value) is similar to img[offset] , except that if offset
+         is outside bounds (e.g. offset<0 or offset>=img.size()), a reference to a value out_value
+         is safely returned instead.
+       - Due to the additional boundary checking operation, this method is slower than operator()(). 
+         Use it when you are not sure about the validity of the specified pixel offset.
+    **/
+    T& at(const int offset, const T& out_value) {
+      return (offset<0 || offset>=(int)size())?(cimg::temporary(out_value)=out_value):(*this)[offset];
+    }
+    
+    T& _at(const int offset) {
+      const unsigned int siz = (unsigned int)size();
+      return (*this)[offset<0?0:(unsigned int)offset>=siz?siz - 1:offset];
+    }
+    
+    T& atX(const int x, const int y, const int z, const int c, const T& out_value) {
+      return (x<0 || x>=width())?(cimg::temporary(out_value)=out_value):(*this)(x,y,z,c);
+    }
+    T& atXY(const int x, const int y, const int z, const int c, const T& out_value) {
+      return (x<0 || y<0 || x>=width() || y>=height()) 
+      ? (cimg::temporary(out_value)=out_value)
+      : (*this)(x,y,z,c);
+    }
+    T& atXYZ(const int x, const int y, const int z, const int c, const T& out_value) {
+      return (x<0 || y<0 || z<0 || x>=width() || y>=height() || z>=depth())?
+        (cimg::temporary(out_value)=out_value):(*this)(x,y,z,c);
+    }
+    T& atXYZC(const int x, const int y, const int z, const int c, const T& out_value) {
+      return (x<0 || y<0 || z<0 || c<0 || x>=width() || y>=height() || z>=depth() || c>=spectrum())?
+        (cimg::temporary(out_value)=out_value):(*this)(x,y,z,c);
+    }
+    
+    T& operator()(const unsigned int x) {
+      return _data[x];
+    }
+    
+    T& operator()(const unsigned int x, const unsigned int y) {
+      return _data[x + y*_width];
+    }
+    
+   T& operator()(const unsigned int x, const unsigned int y, const unsigned int z) {
+      return _data[x + y*(ulongT)_width + z*(ulongT)_width*_height];
+   }
+   
+    T& operator()(const unsigned int x, const unsigned int y, const unsigned int z, 
+                  const unsigned int c) {
+      return _data[x + y*(ulongT)_width + z*(ulongT)_width*_height 
+            + c*(ulongT)_width*_height*_depth];
+    }
+    T& operator()(const unsigned int x, const unsigned int y, const unsigned int z, 
+                  const unsigned int, const ulongT wh) {
+      return _data[x + y*_width + z*wh];
+    }
+    T& operator()(const unsigned int x, const unsigned int y, const unsigned int z, 
+                  const unsigned int c, const ulongT wh, const ulongT whd) {
+      return _data[x + y*_width + z*wh + c*whd];
+    }
+```
