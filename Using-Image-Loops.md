@@ -186,3 +186,33 @@ visu.display("Original + Filtered");       // Display both original and filtered
 ```
 
 As you can see, explaining the use of the CImg neighborhood macros is actually more difficult than using them !
+
+
+## Source code of Loops over the pixel buffer
+
+```c++
+// Macros to perform various image loops.
+//
+// These macros are simpler to use than loops with C++ iterators.
+#define cimg_for(img,ptrs,T_ptrs) \
+  for (T_ptrs *ptrs = (img)._data, *_max##ptrs = (img)._data + (img).size(); ptrs<_max##ptrs; ++ptrs)
+#define cimg_rof(img,ptrs,T_ptrs) for (T_ptrs *ptrs = (img)._data + (img).size() - 1; ptrs>=(img)._data; --ptrs)
+#define cimg_foroff(img,off) for (cimg_ulong off = 0, _max##off = (img).size(); off<_max##off; ++off)
+
+#define cimg_for1(bound,i) for (int i = 0; i<(int)(bound); ++i)
+#define cimg_forX(img,x) cimg_for1((img)._width,x)
+#define cimg_forY(img,y) cimg_for1((img)._height,y)
+#define cimg_forZ(img,z) cimg_for1((img)._depth,z)
+#define cimg_forC(img,c) cimg_for1((img)._spectrum,c)
+#define cimg_forXY(img,x,y) cimg_forY(img,y) cimg_forX(img,x)
+#define cimg_forXZ(img,x,z) cimg_forZ(img,z) cimg_forX(img,x)
+#define cimg_forYZ(img,y,z) cimg_forZ(img,z) cimg_forY(img,y)
+#define cimg_forXC(img,x,c) cimg_forC(img,c) cimg_forX(img,x)
+#define cimg_forYC(img,y,c) cimg_forC(img,c) cimg_forY(img,y)
+#define cimg_forZC(img,z,c) cimg_forC(img,c) cimg_forZ(img,z)
+#define cimg_forXYZ(img,x,y,z) cimg_forZ(img,z) cimg_forXY(img,x,y)
+#define cimg_forXYC(img,x,y,c) cimg_forC(img,c) cimg_forXY(img,x,y)
+#define cimg_forXZC(img,x,z,c) cimg_forC(img,c) cimg_forXZ(img,x,z)
+#define cimg_forYZC(img,y,z,c) cimg_forC(img,c) cimg_forYZ(img,y,z)
+#define cimg_forXYZC(img,x,y,z,c) cimg_forC(img,c) cimg_forXYZ(img,x,y,z)
+```
